@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>View Records</title>
+    <style>
+        /* Tema Değişiklikleri İçin Temel Renkler */
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --btn-bg-color: #8826bd;
+            --btn-hover-bg-color: #8826bd;
+            --table-border-color: #ddd;
+            --table-th-bg-color: #8826bd;
+            --table-th-text-color: #fff;
+            --table-td-bg-color: #e4e4e4;
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+        
+        /* Koyu Tema Renkleri */
+        [data-theme="dark"] {
+            --bg-color: #333;
+            --text-color: #f4f4f4;
+            --btn-bg-color: #8826bda7;
+            --btn-hover-bg-color: #8826bda7;
+            --table-border-color: #888;
+            --table-th-bg-color: #8826bda7;
+            --table-th-text-color: #f4f4f4;
+            --table-td-bg-color: #a2a1a1;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        h1 {
+            margin-top: 5%;
+            transition: color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        table {
+            display: none; /* Başlangıçta tabloyu gizle */
+            margin-top: 20px;
+            width: 80%;
+            border-collapse: collapse;
+            text-align: left;
+            margin-left: auto;
+            margin-right: auto;
+            border-bottom: 1px solid var(--table-border-color);
+            transition: border-color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        th, td {
+            padding: 10px;
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+            max-width: 900px;
+        }
+
+        th {
+            background-color: var(--table-th-bg-color);
+            color: var(--table-th-text-color);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: var(--btn-bg-color);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        button:hover {
+            background-color: var(--btn-hover-bg-color);
+            transition: background-color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        /* Tema Değiştirici Butonu */
+        /* Konteyner */
+        .switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3%;
+    position: absolute; /* Pozisyonu sayfaya göre ayarla */
+    top: 20px; /* Üstten boşluk */
+    right: 6%; /* Soldan boşluk */
+}
+
+/* Anahtar anahtarı tasarımı */
+.switch {
+    margin: 0; /* Varsayılan marjı sıfırla */
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Gerçek kutucuğu (checkbox) gizle */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--btn-bg-color);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--btn-hover-bg-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--btn-hover-bg-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Yuvarlak kaydırıcıyı (slider) ekle (isteğe bağlı) */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Geri Dönme Butonu Stilleri */
+.back-button {
+    text-indent: -9999;
+    position: absolute;
+    top: 20px;  /* Düğmenin üstten uzaklığı */
+    left: 20px;  /* Düğmenin soldan uzaklığı */
+    padding: 10px 20px;  /* Düğmenin iç boşlukları */
+    font-size: 16px;  /* Yazı tipi büyüklüğü */
+    text-decoration: none;  /* Alt çizgiyi kaldır */
+    color: var(--text-color);  /* Yazı rengi */
+    background-color: var(--btn-bg-color);  /* Arka plan rengi */
+    font-weight: bolder;
+    border-radius: 5px;  /* Kenar yuvarlaklığı */
+    transition: background-color 0.3s, color 0.3s;  /* Renk geçişleri için animasyon süresi */
+}
+
+.back-button:hover {
+    background-color: var(--btn-hover-bg-color);  /* Fare üzerine geldiğinde arka plan rengi */
+    color: #fff;  /* Fare üzerine geldiğinde yazı rengi */
+}
+
+    </style>
+</head>
+<body>
+        <a href="javascript:history.back()" class="back-button">&#8592;</a>
+    <h1>Sorgu Kayıtları</h1>
+    <div class="switch-container">
+        <label class="switch">
+            <input type="checkbox" onchange="toggleTheme()">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <button onclick="showRecords()">Kayıtları Göster</button>
+    <button onclick="clearRecords()">Kayıtları Temizle</button>
+
+    <table id="recordsTable">
+        <tr>
+            <th>ID</th>
+            <th>User Input</th>
+            <th>Model Output</th>
+            <th>Tarih</th>
+        </tr>
+        {% for record in all_records %}
+            <tr>
+                <td>{{ record.id }}</td>
+                <td>{{ record.user_input }}</td>
+                <td><pre><code style="background-color: var(--table-td-bg-color)">{{ record.model_output }}</code></pre></td> <!-- Model output kod bloğu -->
+                <td>{{ record.timestamp }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        // Kayıtları gösterme/gizleme fonksiyonu
+        function showRecords() {
+            var table = document.getElementById("recordsTable");
+            if (table.style.display === "none") {
+                table.style.display = "table";
+            } else {
+                table.style.display = "none";
+            }
+        }
+
+        // Tema değiştirme fonksiyonu
+        function toggleTheme() {
+            var checkbox = document.querySelector('.switch input[type="checkbox"]');
+            var root = document.documentElement;
+            var newTheme = checkbox.checked ? 'dark' : 'light';
+            root.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function clearRecords() {
+            var confirmation = confirm("Tüm sorgu kayıtlarını silmek istediğinizden emin misiniz?");
+            if (confirmation) {
+                // Kullanıcı onayladıysa, kayıtları temizle
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        // Sayfayı yenile
+                        location.reload();
+                    }
+                };
+                xhr.open("GET", "/clear_records", true);
+                xhr.send();
+            }
+        }
+    </script>
+</body>
+</html>

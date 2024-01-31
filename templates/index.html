@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>AI Assistance</title>
+    <style>
+        /* Tema Değişiklikleri İçin Temel Renkler */
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --btn-bg-color: #8826bd;
+            --btn-hover-bg-color: #8826bd;
+            --border-color: #ccc;
+            --box-bg-color: #fff;
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+            --model-output-bg-color: #fff; /* Light theme background for model output */
+            --model-output-text-color: #333;
+        }
+        
+        /* Koyu Tema Renkleri */
+        [data-theme="dark"] {
+            --bg-color: #333;
+            --text-color: #f4f4f4;
+            --btn-bg-color: #8826bda7;
+            --btn-hover-bg-color: #8826bda7;
+            --border-color: #888;
+            --box-bg-color: #444;
+            --model-output-bg-color: #444; /* Dark theme background for model output */
+            --model-output-text-color: #f4f4f4;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        h1 {
+            margin-top: 3%;
+            transition: color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        form {
+            margin-top: auto; /* Form en alta yerleşecek */
+            display: flex;
+            flex-direction: row; /* Change to row */
+            align-items: center;
+            justify-content: center; /* Center the items horizontally */
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            border-radius: 4px;
+            padding: 10px;
+            width: 800px;
+            font-size: 16px;
+            margin-right: 10px; /* Add some spacing between input and button */
+            background-color: var(--box-bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        button, .button-like {
+            margin-top: 10px;
+            padding: 11.5px;
+            font-size: 16px;
+            background-color: var(--btn-bg-color);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        .button-like {
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
+            margin-left: 10%;
+            width: 8%;
+            height: 7%;
+            margin-top: 3%;
+            padding: 11.5px;
+            font-size: 16px;
+            background-color: var(--btn-bg-color);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        button:hover, .button-like:hover {
+            background-color: var(--btn-hover-bg-color);
+            transition: background-color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 18px;
+            transition: color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        strong {
+            color: var(--text-color);
+            transition: color 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        .kutu {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            max-height: 300px;  /* Maksimum yükseklik ayarlayın */
+            overflow-y: auto;  /* Dikey kaydırma çubuğunu etkinleştirin */
+            transition: background-color 0.3s, border-color 0.3s; /* Renk geçişleri için animasyon süresi */
+            background-color: var(--model-output-bg-color); /* Use the variable for background color */
+            color: var(--model-output-text-color); 
+        }
+
+        a.kayit {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .tekrar {
+            margin:2px;
+            background-color: gray;
+            opacity: 0.8;
+            background-image: url("../static/retry.png");
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+            text-indent: -9999px; /* Hide the text content of the button */
+            padding-left: 40px; /* Adjust the padding based on your logo size */
+            transition: background-color 0.3s, opacity 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+        .button-like2 {
+            margin:2px;
+            background-color: var(--btn-bg-color);
+            opacity: 0.9;
+            background-image: url("../static/record.png");
+            background-size: 38%;
+            background-repeat: no-repeat;
+            background-position: center;
+            text-indent: -9999px; /* Hide the text content of the button */
+            padding-left: 40px; /* Adjust the padding based on your logo size */
+            transition: background-color 0.3s, opacity 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+        .gonder{
+            margin:2px;
+            background-image: url("../static/send.png");
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+            text-indent: -9999px; /* Hide the text content of the button */
+            padding-left: 40px; /* Adjust the padding based on your logo size */
+            opacity:0.9;
+            transition: background-color 0.3s, opacity 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+
+        .tekrar:hover, .gonder:hover ,.button-like2:hover{
+            background-color: gray;
+            opacity: 1;
+            transition: background-color 0.3s, opacity 0.3s; /* Renk geçişleri için animasyon süresi */
+        }
+        
+        .ornek-sorgu {
+            cursor: pointer;
+            margin: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            width: calc(33% - 22px); /* Hesaplama, kenar boşluklarını da hesaba katarak genişlik ayarlar */
+            background-color: var(--box-bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s; /* Renk geçişleri için animasyon süresi */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box; /* Padding'i ve border'ı genişliğe dahil et */
+        }
+
+        .ornek-sorgu:hover {
+            background-color: var(--btn-hover-bg-color);
+            color: #fff;
+        }
+
+        .ornek-sorgular {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* Konteyner */
+.switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3%;
+    position: absolute; /* Pozisyonu sayfaya göre ayarla */
+    top: 20px; /* Üstten boşluk */
+    right: 6%; /* Soldan boşluk */
+}
+
+/* Anahtar anahtarı tasarımı */
+.switch {
+    margin: 0; /* Varsayılan marjı sıfırla */
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Gerçek kutucuğu (checkbox) gizle */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--btn-bg-color);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--btn-hover-bg-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--btn-hover-bg-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Yuvarlak kaydırıcıyı (slider) ekle (isteğe bağlı) */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+pre, code {
+    /* Daha önceki stil tanımlarınız */
+    --background-color: #f8f8f8; /* Arka plan rengi */
+    padding: 10px;
+    border-radius: 5px; /* Kenar yuvarlaklığı */
+    border: 1px solid #ccc; /* Çerçeve */
+    overflow-x: auto; /* Uzun kodlar için yatay kaydırma çubuğu */
+    font-size: 18px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+pre {
+    margin-bottom: 20px; /* Alt kısımdan boşluk */
+}
+
+.dropdown {
+    position: relative;
+    float:left;
+    left: 5%;
+    margin-top: 3%;
+}
+
+/* Dropdown içeriği stilleri */
+.dropbtn {
+    background-color: var(--btn-bg-color);
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+/* İpucu içeriği */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 450px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    padding: 10px;
+    margin-top: 10%;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.122);
+}
+
+/* İpucu içeriği linkleri */
+.dropdown-content p {
+    color: var(--text-color);
+    padding: 5px 0;
+    text-decoration: none;
+    display: block;
+}
+
+/* Mouse üzerine gelince dropdown içeriği görünür olmalı */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Sol üst köşede yer alacak dropdown butonu -->
+        <div class="dropdown">
+            <button class="dropbtn">İpuçları</button>
+            <div class="dropdown-content">
+                <p>Hava durumu bilgisi için: "şehir_ismi hava durumu" yazınız</p>
+            </div>
+        </div>
+        <!-- Diğer başlık veya elementler -->
+    </header>
+<!-- Tema Değiştirici -->
+<div class="switch-container">
+    <label class="switch">
+        <input type="checkbox" onchange="toggleTheme()">
+        <span class="slider round"></span>
+    </label>
+</div>
+    <h1>AI Assistance</h1>
+    <!-- Rastgele Sorgu Örnekleri -->
+    <div id="ornek-sorgular" class="ornek-sorgular">
+    </div>
+    {% if model_output %}
+    <div class="kutu">
+        <p><strong>Cevap:</strong></p>
+        <pre><code class="hljs">{{ model_output }}</code></pre>
+    </div>
+{% endif %}
+    {% if user_input %}
+    <p><strong>Sorgu:</strong> {{ user_input }}</p>
+    {% endif %}
+    <form action="/get_response" method="post">
+        <input type="text" id="user_input" name="user_input" placeholder="Sorgu giriniz" required>
+        <button type="submit" class="gonder">Gönder</button>
+        <button id="start-record-btn" class="button-like2">Ses ile Sorgula</button>
+        <button type="button" onclick="repeatLastQuery()" class="tekrar">Son Sorguyu Tekrarla</button>
+    </form>
+   
+
+    <a href="/view_records" class="kayit"><button>Sorgu Geçmişi</button></a>
+    <script>
+       document.addEventListener('DOMContentLoaded', function () {
+            loadTheme();
+            setupSpeechRecognition();
+        });
+
+        // Temayı yükleme fonksiyonu
+        function loadTheme() {
+            var root = document.documentElement;
+            var savedTheme = localStorage.getItem('theme') || 'light';
+            root.setAttribute('data-theme', savedTheme);
+        }
+
+        // Temayı değiştirme fonksiyonu
+        function toggleTheme() {
+    var checkbox = document.querySelector('.switch input[type="checkbox"]');
+    var root = document.documentElement;
+    var newTheme = checkbox.checked ? 'dark' : 'light';
+    root.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+        // Ses tanıma ayarlarını yapılandırma fonksiyonu
+        function setupSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (typeof SpeechRecognition !== "undefined") {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'tr-TR';
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('user_input').value = transcript;
+                    document.querySelector('form').submit();
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Ses tanıma hatası:', event.error);
+                };
+
+                document.getElementById('start-record-btn').addEventListener('click', function() {
+                    recognition.start();
+                });
+            } else {
+                console.log("Tarayıcınız SpeechRecognition'ı desteklemiyor.");
+            }
+        }
+        
+        // Son sorguyu tekrarla fonksiyonu
+        function repeatLastQuery() {
+            var user_input = "{{ user_input }}";
+            var form = document.querySelector('form');
+            var inputField = form.querySelector('input[name="user_input"]');
+            inputField.value = user_input;
+            form.submit();
+        }
+
+        // Örnek sorguyu input alanına yerleştir ve formu gönder
+        function setInputValue(sorgu) {
+            document.getElementById('user_input').value = sorgu;
+            document.querySelector('form').submit();
+        }
+
+        const ornekSorgular = [
+    "Bana bir şarkı öner", 
+    "Bana bir film öner.", 
+    "Tarihteki en büyük imparatorluk hangisiydi ?",
+    "En iyi bilim kurgu kitapları nelerdir?",
+    "Sağlıklı beslenme için öneriler nelerdir?",
+    "Dünya'nın en hızlı hayvanı hangisidir?",
+    "En popüler programlama dilleri hangileridir?",
+    "En etkili zaman yönetimi teknikleri nelerdir?",
+    "Kuantum mekaniği nedir?",
+    "En iyi klasik müzik eserleri hangileridir?",
+    "Sürdürülebilir enerji kaynakları nelerdir?",
+    "Mars'a insanlı uçuş ne zaman olacak?",
+    "Yapay zeka geleceği nasıl etkileyecek?",
+    "En ünlü ressamlar ve eserleri nelerdir?",
+    "En etkili stres azaltma yöntemleri nelerdir?",
+    "Dünya dışı yaşam var mı?",
+    "Okyanusların derinliklerinde ne var?",
+    "En popüler bilim insanları kimlerdir?",
+    "İklim değişikliğiyle mücadelede önemli adımlar nelerdir?",
+    "En iyi animasyon filmleri hangileridir?",
+    "Kara delikler nasıl oluşur?",
+    "En etkileyici tarihi romanlar hangileridir?",
+    "Dünyanın en büyük teknoloji şirketleri hangileridir?",
+    "Yapay zeka etiğinde önemli konular nelerdir?",
+    "Antik çağın yedi harikası nelerdir?",
+    "En iyi aksiyon filmleri hangileridir?",
+    "Sanal gerçeklik geleceği nasıl şekillendirecek?"
+];
+
+
+function rastgeleSorgulariGoster() {
+    const secilenSorgular = [];
+    while(secilenSorgular.length < 3){
+        const rastgeleIndex = Math.floor(Math.random() * ornekSorgular.length);
+        const secilenSorgu = ornekSorgular[rastgeleIndex];
+        if(!secilenSorgular.includes(secilenSorgu)){
+            secilenSorgular.push(secilenSorgu);
+        }
+    }
+    
+    const ornekSorgularDiv = document.getElementById('ornek-sorgular');
+    ornekSorgularDiv.innerHTML = ''; // Mevcut içeriği temizle
+
+    secilenSorgular.forEach(sorgu => {
+        const sorguDiv = document.createElement('div');
+        sorguDiv.className = 'ornek-sorgu';
+        sorguDiv.innerText = sorgu;
+        sorguDiv.onclick = function() { setInputValue(sorgu); };
+        ornekSorgularDiv.appendChild(sorguDiv);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    loadTheme();
+    setupSpeechRecognition();
+    rastgeleSorgulariGoster(); // Bu fonksiyonu burada çağır
+});
+
+    </script>
+</body>
+</html>
